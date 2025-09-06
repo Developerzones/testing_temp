@@ -36,6 +36,9 @@ dependencies {
 	//for Password
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	//for Email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 }
 
 tasks.named('test') {
