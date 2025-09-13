@@ -1,0 +1,73 @@
+curl -X POST "http://localhost:8080/api/verify-certificate/search" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "email": "test12@gmail.com"
+         }'
+
+
+
+curl -X POST "http://localhost:8080/api/verify-certificate/search" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "certificateId": "12345"
+         }'
+
+
+
+curl -X POST "http://localhost:8080/api/verify-certificate/search" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "phoneNumber": "9876543210"
+         }'
+
+
+curl -X POST "http://localhost:8080/api/verify-certificate" \
+     -H "Accept: application/json" \
+     -F 'internship={
+            "name":"John Doe",
+            "email":"john@example.com",
+            "phoneNumber":"9876543210",
+            "githubLink":"https://github.com/johndoe",
+            "linkedinLink":"https://linkedin.com/in/johndoe",
+            "startDate":"2025-01-01",
+            "endDate":"2025-06-01",
+            "internshipProfile":"Software Developer",
+            "internshipStatus":"Active",
+            "remark":"Good performer",
+            "projectLink":"https://github.com/johndoe/project",
+            "projectStatus":"Completed",
+            "certificateLink":"https://example.com/certificate",
+            "certificateId":"CERT-12345"
+         };type=application/json' \
+     -F "profilePhoto=@/path/to/photo.jpg"
+
+
+curl -X PUT "http://localhost:8080/api/verify-certificate/1" \
+     -H "Accept: application/json" \
+     -F 'internship={
+            "name":"Jane Doe",
+            "email":"jane@example.com",
+            "phoneNumber":"9876500000",
+            "githubLink":"https://github.com/janedoe",
+            "linkedinLink":"https://linkedin.com/in/janedoe",
+            "startDate":"2025-02-01",
+            "endDate":"2025-07-01",
+            "internshipProfile":"Full Stack Developer",
+            "internshipStatus":"Active",
+            "remark":"Updated internship",
+            "projectLink":"https://github.com/janedoe/newproject",
+            "projectStatus":"In Progress",
+            "certificateLink":"https://example.com/certificate-new",
+            "certificateId":"CERT-9999"
+         };type=application/json' \
+     -F "profilePhoto=@/path/to/newphoto.jpg"
+
+
+curl -X DELETE "http://localhost:8080/api/verify-certificate/1" \
+     -H "Accept: application/json"
+
+
+
+curl -X GET "http://localhost:8080/api/verify-certificate/files/sample.jpg" \
+     -H "Accept: application/octet-stream" \
+     -o sample.jpg

@@ -5,7 +5,6 @@ import com.example.demo.framework.login.dto.LoginDTO;
 import com.example.demo.framework.login.dto.RegisterDTO;
 import com.example.demo.framework.login.model.LoginEntity;
 import com.example.demo.framework.login.service.LoginService;
-import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
