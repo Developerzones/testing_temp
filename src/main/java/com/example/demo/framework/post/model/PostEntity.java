@@ -21,6 +21,11 @@ public class PostEntity {
     @Column(name = "category")
     private String category;
 
+
+    @Column(name="slug")
+    private String Slug;
+
+    
     @Column(name = "author_date")
     private LocalDateTime authorDate;
 
@@ -37,13 +42,14 @@ public class PostEntity {
     // Constructors
     public PostEntity() {}
 
-    public PostEntity(String headingText, String authorName, String category, LocalDateTime authorDate) {
+    public PostEntity(String headingText, String authorName, String category, LocalDateTime authorDate, String Slug) {
         this.headingText = headingText;
         this.authorName = authorName;
         this.category = category;
         this.authorDate = authorDate;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.Slug = Slug;
     }
 
     // Getters and Setters
@@ -70,4 +76,13 @@ public class PostEntity {
 
     public List<PostComponent> getComponents() { return components; }
     public void setComponents(List<PostComponent> components) { this.components = components; }
+
+    
+    public String getSlug() {
+        return Slug;
+    }
+
+    public void setSlug(String slug) {
+        this.Slug = slug;
+    }
 }
