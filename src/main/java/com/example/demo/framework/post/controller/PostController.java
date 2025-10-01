@@ -132,7 +132,7 @@ public class PostController {
             PostEntity createdPost = postService.createPost(request);
 
             Map<String, Object> safePost = new HashMap<>();
-            System.out.println("Before id");
+            // System.out.println("Before id");
             safePost.put("id", createdPost.getId());
             safePost.put("headingText", createdPost.getHeadingText());
             safePost.put("authorName", createdPost.getAuthorName());
@@ -140,7 +140,7 @@ public class PostController {
             safePost.put("componentCount", createdPost.getComponents().size());
             safePost.put("slug", createdPost.getSlug());
 
-            System.out.println("afetr id");
+            // System.out.println("afetr id");
 
             if (createdPost.getCreatedAt() != null) {
                 safePost.put("createdAt", createdPost.getCreatedAt().toString());
