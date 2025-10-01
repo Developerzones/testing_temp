@@ -63,10 +63,10 @@ public class PostController {
     }
 
     // GET /post/{id} - Get specific post with components
-    @GetMapping("/post/{id}")
-    public ResponseEntity<Object> getPostById(@PathVariable Long id) {
+    @GetMapping("/post/{slug}")
+    public ResponseEntity<Object> getPostById(@PathVariable Long Slug) {
         try {
-            Optional<PostEntity> postOpt = postService.getPostById(id);
+            Optional<PostEntity> postOpt = postService.getPostById(Slug);
             if (postOpt.isPresent()) {
                 PostEntity post = postOpt.get();
 
@@ -138,6 +138,8 @@ public class PostController {
             safePost.put("authorName", createdPost.getAuthorName());
             safePost.put("category", createdPost.getCategory());
             safePost.put("componentCount", createdPost.getComponents().size());
+            safePost.put("slug", createdPost.getSlug());
+
             System.out.println("afetr id");
 
             if (createdPost.getCreatedAt() != null) {
