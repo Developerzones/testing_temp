@@ -17,6 +17,8 @@ public class CreatePost {
     @NotBlank(message = "Author name is required")
     private String authorName;
 
+     @NotBlank(message = "Slug is required")
+    private String slug;
     private String category;
 
     private List<ComponentsRequest> components;
