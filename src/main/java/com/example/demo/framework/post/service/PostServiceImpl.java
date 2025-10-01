@@ -34,9 +34,11 @@ public class PostServiceImpl implements PostService{
 
 
     // Get post by ID
-    public Optional<PostEntity> getPostById(Long id) {
-        return repo.findById(id);
-    }
+ 
+    public Optional<PostEntity> getPostBySlug(String slug) {
+    return postRepository.findBySlug(slug);
+}
+
 
     // Get post with parsed components for view display
     public PostEntity getPostWithParsedComponents(Long id) {
