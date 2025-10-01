@@ -89,7 +89,15 @@ public class PostServiceImpl implements PostService{
         post.setUpdatedAt(LocalDateTime.now());
 
     // set slug from request
+  if (request.getSlug() == null || request.getSlug().isBlank()) {
+    post.setSlug(request.getHeadingText()
+        .toLowerCase()
+        .replaceAll("[^a-z0-9]+", "-")
+        .replaceAll("(^-|-$)", ""));
+} else {
     post.setSlug(request.getSlug());
+}
+
         // Save post first to get ID
         post = repo.save(post);
 
