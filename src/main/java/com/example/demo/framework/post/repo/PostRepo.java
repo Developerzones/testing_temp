@@ -14,7 +14,7 @@ public interface PostRepo extends JpaRepository<PostEntity, Long> {
 
     List<PostEntity> findAllByOrderByCreatedAtDesc();
 
-        Optional<PostEntity> findBySlug(String slug);
+        Optional<PostEntity> findBySlug(String Slug);
 
     
     @Query("SELECT p FROM PostEntity p LEFT JOIN FETCH p.components WHERE p.id = :id")
