@@ -21,6 +21,10 @@ public class PostEntity {
     @Column(name = "category")
     private String category;
 
+    
+    @Column(name="slug")
+    private String slug;
+
     @Column(name = "author_date")
     private LocalDateTime authorDate;
 
