@@ -88,6 +88,8 @@ public class PostServiceImpl implements PostService{
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
 
+    // set slug from request
+    post.setSlug(request.getSlug());
         // Save post first to get ID
         post = repo.save(post);
 
