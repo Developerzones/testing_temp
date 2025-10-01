@@ -70,4 +70,12 @@ public class PostEntity {
 
     public List<PostComponent> getComponents() { return components; }
     public void setComponents(List<PostComponent> components) { this.components = components; }
+
+     public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
 }
