@@ -36,7 +36,7 @@ public class PostServiceImpl implements PostService{
     // Get post by ID
  
     public Optional<PostEntity> getPostBySlug(String slug) {
-    return postRepository.findBySlug(slug);
+    return repo.findBySlug(slug);
 }
 
 
