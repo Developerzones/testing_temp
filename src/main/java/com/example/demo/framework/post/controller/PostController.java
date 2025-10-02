@@ -64,9 +64,9 @@ public class PostController {
 
     // GET /post/{id} - Get specific post with components
     @GetMapping("/post/{slug}")
-    public ResponseEntity<Object> getPostBySlug(@PathVariable String Slug) {
+    public ResponseEntity<Object> getPostBySlug(@PathVariable String slug) {
         try {
-            Optional<PostEntity> postOpt = postService.getPostBySlug(Slug);
+            Optional<PostEntity> postOpt = postService.getPostBySlug(slug);
             if (postOpt.isPresent()) {
                 PostEntity post = postOpt.get();
 
