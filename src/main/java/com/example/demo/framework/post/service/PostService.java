@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface PostService {
 
     public List<PostEntity> getAllPosts();
-    public Optional<PostEntity> getPostBySlug(String Slug);
+    public Optional<PostEntity> getPostBySlug(String slug);
     public PostEntity getPostWithParsedComponents(Long id);
     public PostEntity createPost(CreatePost request);
 
