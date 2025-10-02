@@ -23,7 +23,7 @@ public class PostEntity {
 
 
     @Column(name="slug")
-    private String Slug;
+    private String slug;
 
     
     @Column(name = "author_date")
@@ -49,7 +49,7 @@ public class PostEntity {
         this.authorDate = authorDate;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.Slug = Slug;
+        this.slug = Slug;
     }
 
     // Getters and Setters
@@ -79,10 +79,10 @@ public class PostEntity {
 
     
     public String getSlug() {
-        return Slug;
+        return slug;
     }
 
     public void setSlug(String slug) {
-        this.Slug = slug;
+        this.slug = slug;
     }
 }
