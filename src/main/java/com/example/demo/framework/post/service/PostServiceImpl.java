@@ -98,6 +98,13 @@ public class PostServiceImpl implements PostService{
     post.setSlug(request.getSlug());
 }
 
+            // ✅ Add uniqueness check here (before saving)
+    String baseSlug = post.getSlug();
+    int counter = 1;
+    while (repo.findBySlug(post.getSlug()).isPresent()) {
+        post.setSlug(baseSlug + "-" + counter++);
+    }
+
         // Save post first to get ID
         post = repo.save(post);
 
