@@ -1,27 +1,30 @@
 package com.example.demo.framework.post.model;
 
-
-import com.example.demo.framework.post.model.PostComponent;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "posts")
-public class PostEntity {
+public class PostDocument {
 
     @Id
-    private String id; // MongoDB uses String _id by default
+    private String id; // Mongo uses String/ObjectId
 
     private String headingText;
     private String authorName;
     private String category;
     private String slug;
+
+    private LocalDateTime authorDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime authorDate;
 
-    private List<PostComponent> components; // embedded components
+    private List<PostComponentDocument> components = new ArrayList<>();
+
+    public PostDocument() {}
 
     public String getId() {
         return id;
@@ -63,6 +66,14 @@ public class PostEntity {
         this.slug = slug;
     }
 
+    public LocalDateTime getAuthorDate() {
+        return authorDate;
+    }
+
+    public void setAuthorDate(LocalDateTime authorDate) {
+        this.authorDate = authorDate;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -79,20 +90,14 @@ public class PostEntity {
         this.updatedAt = updatedAt;
     }
 
-    public LocalDateTime getAuthorDate() {
-        return authorDate;
-    }
-
-    public void setAuthorDate(LocalDateTime authorDate) {
-        this.authorDate = authorDate;
-    }
-
-    public List<PostComponent> getComponents() {
+    public List<PostComponentDocument> getComponents() {
         return components;
     }
 
-    public void setComponents(List<PostComponent> components) {
+    public void setComponents(List<PostComponentDocument> components) {
         this.components = components;
     }
-// getters and setters
+
+
+    // getters & setters
 }

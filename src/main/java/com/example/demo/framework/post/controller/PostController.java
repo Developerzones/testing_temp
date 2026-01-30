@@ -1,8 +1,7 @@
 package com.example.demo.framework.post.controller;
 
-
-
 import com.example.demo.framework.post.dto.CreatePost;
+import com.example.demo.framework.post.model.PostComponent;
 import com.example.demo.framework.post.model.PostEntity;
 import com.example.demo.framework.post.service.PostService;
 import jakarta.validation.Valid;
@@ -11,11 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("post")
@@ -25,7 +20,7 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    // GET /posts - Get all posts
+    // GET /post/posts - Get all posts
     @GetMapping("/posts")
     public ResponseEntity<Object> getAllPosts() {
         try {
@@ -38,12 +33,8 @@ public class PostController {
                 safePost.put("headingText", post.getHeadingText());
                 safePost.put("authorName", post.getAuthorName());
                 safePost.put("category", post.getCategory());
-                safePost.put("componentCount", post.getComponents().size());
-
-                if (post.getCreatedAt() != null) {
-                    safePost.put("createdAt", post.getCreatedAt().toString());
-                }
-
+                safePost.put("componentCount", post.getComponents() != null ? post.getComponents().size() : 0);
+                safePost.put("createdAt", post.getCreatedAt() != null ? post.getCreatedAt().toString() : null);
                 safePosts.add(safePost);
             }
 
@@ -62,7 +53,7 @@ public class PostController {
         }
     }
 
-    // GET /post/{id} - Get specific post with components
+    // GET /post/post/{slug} - Get specific post by slug with components
     @GetMapping("/post/{slug}")
     public ResponseEntity<Object> getPostBySlug(@PathVariable String slug) {
         try {
@@ -75,31 +66,23 @@ public class PostController {
                 safePost.put("headingText", post.getHeadingText());
                 safePost.put("authorName", post.getAuthorName());
                 safePost.put("category", post.getCategory());
+                safePost.put("slug", post.getSlug());
+                safePost.put("authorDate", post.getAuthorDate() != null ? post.getAuthorDate().toString() : null);
+                safePost.put("createdAt", post.getCreatedAt() != null ? post.getCreatedAt().toString() : null);
+                safePost.put("updatedAt", post.getUpdatedAt() != null ? post.getUpdatedAt().toString() : null);
 
-                if (post.getAuthorDate() != null) {
-                    safePost.put("authorDate", post.getAuthorDate().toString());
-                }
-                if (post.getCreatedAt() != null) {
-                    safePost.put("createdAt", post.getCreatedAt().toString());
-                }
-                if (post.getUpdatedAt() != null) {
-                    safePost.put("updatedAt", post.getUpdatedAt().toString());
-                }
-
-                // Add components
+                // Add components if any
                 List<Map<String, Object>> safeComponents = new ArrayList<>();
-                for (var component : post.getComponents()) {
-                    Map<String, Object> safeComponent = new HashMap<>();
-                    safeComponent.put("id", component.getId());
-                    safeComponent.put("componentType", component.getComponentType().toString());
-                    safeComponent.put("componentOrder", component.getComponentOrder());
-                    safeComponent.put("componentData", component.getComponentData());
-
-                    if (component.getParsedData() != null) {
+                if (post.getComponents() != null) {
+                    for (PostComponent component : post.getComponents()) {
+                        Map<String, Object> safeComponent = new HashMap<>();
+                        safeComponent.put("id", component.getId());
+                        safeComponent.put("componentType", component.getComponentType());
+                        safeComponent.put("componentOrder", component.getComponentOrder());
+                        safeComponent.put("componentData", component.getComponentData());
                         safeComponent.put("parsedData", component.getParsedData());
+                        safeComponents.add(safeComponent);
                     }
-
-                    safeComponents.add(safeComponent);
                 }
 
                 safePost.put("components", safeComponents);
@@ -109,6 +92,7 @@ public class PostController {
                 response.put("success", true);
                 response.put("data", safePost);
                 return ResponseEntity.ok(response);
+
             } else {
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", false);
@@ -124,27 +108,20 @@ public class PostController {
         }
     }
 
-    // POST /post/create - Create new post
+    // POST /post/post/create - Create a new post
     @PostMapping("/post/create")
     public ResponseEntity<Object> createPost(@Valid @RequestBody CreatePost request) {
         try {
-
             PostEntity createdPost = postService.createPost(request);
 
             Map<String, Object> safePost = new HashMap<>();
-            // System.out.println("Before id");
             safePost.put("id", createdPost.getId());
             safePost.put("headingText", createdPost.getHeadingText());
             safePost.put("authorName", createdPost.getAuthorName());
             safePost.put("category", createdPost.getCategory());
-            safePost.put("componentCount", createdPost.getComponents().size());
             safePost.put("slug", createdPost.getSlug());
-
-            // System.out.println("afetr id");
-
-            if (createdPost.getCreatedAt() != null) {
-                safePost.put("createdAt", createdPost.getCreatedAt().toString());
-            }
+            safePost.put("componentCount", createdPost.getComponents() != null ? createdPost.getComponents().size() : 0);
+            safePost.put("createdAt", createdPost.getCreatedAt() != null ? createdPost.getCreatedAt().toString() : null);
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);

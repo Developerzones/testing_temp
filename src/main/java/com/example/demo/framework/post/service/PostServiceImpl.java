@@ -2,189 +2,95 @@ package com.example.demo.framework.post.service;
 
 import com.example.demo.framework.post.dto.ComponentsRequest;
 import com.example.demo.framework.post.dto.CreatePost;
-import com.example.demo.framework.post.model.ComponentType;
 import com.example.demo.framework.post.model.PostComponent;
 import com.example.demo.framework.post.model.PostEntity;
-import com.example.demo.framework.post.repo.PostRepo;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.framework.post.repo.PostRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
-    @Autowired
-    private PostRepo repo;
+    private final PostRepository postRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    public PostServiceImpl(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
-
-
-    // Get all posts
+    @Override
     public List<PostEntity> getAllPosts() {
-        return repo.findAllByOrderByCreatedAtDesc();
+        return postRepository.findAll();
     }
 
-
-    // Get post by ID
- 
+    @Override
     public Optional<PostEntity> getPostBySlug(String slug) {
-    return repo.findBySlug(slug);
-}
-
-
-    // Get post with parsed components for view display
-    public PostEntity getPostWithParsedComponents(Long id) {
-        Optional<PostEntity> postOptional = repo.findByIdWithComponents(id);
-        if (postOptional.isEmpty()) {
-            throw new RuntimeException("Post not found");
-        }
-
-        PostEntity post = postOptional.get();
-
-        // Parse component data for easier template access
-        for (PostComponent component : post.getComponents()) {
-            try {
-                Map<String, Object> data = objectMapper.readValue(component.getComponentData(), Map.class);
-                component.setParsedData(data);
-
-                // Debug logging for image components
-                if (component.getComponentType() == ComponentType.IMAGE_BLOCK) {
-                    System.out.println("Image component data: " + component.getComponentData());
-                    System.out.println("Parsed src: " + data.get("src"));
-                    System.out.println("Parsed alt: " + data.get("alt"));
-                }
-            } catch (JsonProcessingException e) {
-                System.err.println("Error parsing component data: " + e.getMessage());
-                Map<String, Object> fallbackData = new HashMap<>();
-                fallbackData.put("error", "Could not parse component data");
-                component.setParsedData(fallbackData);
-            }
-        }
-
-        return post;
+        return postRepository.findBySlug(slug);
     }
 
+    @Override
+    public PostEntity getPostWithParsedComponents(Long id) {
+        // Optional: implement if needed, otherwise return null or throw exception
+        return null;
+    }
 
-
-
-    // Create new post
-    @Transactional
+    @Override
     public PostEntity createPost(CreatePost request) {
-        System.out.println("Before create");
-
         PostEntity post = new PostEntity();
         post.setHeadingText(request.getHeadingText());
         post.setAuthorName(request.getAuthorName());
         post.setCategory(request.getCategory());
-        post.setAuthorDate(LocalDateTime.now());
+        post.setSlug(request.getSlug());
         post.setCreatedAt(LocalDateTime.now());
-        post.setUpdatedAt(LocalDateTime.now());
 
-    // set slug from request
-  if (request.getSlug() == null || request.getSlug().isBlank()) {
-    post.setSlug(request.getHeadingText()
-        .toLowerCase()
-        .replaceAll("[^a-z0-9]+", "-")
-        .replaceAll("(^-|-$)", ""));
-} else {
-    post.setSlug(request.getSlug());
-}
-
-            // ✅ Add uniqueness check here (before saving)
-    String baseSlug = post.getSlug();
-    int counter = 1;
-    while (repo.findBySlug(post.getSlug()).isPresent()) {
-        post.setSlug(baseSlug + "-" + counter++);
-    }
-
-        // Save post first to get ID
-        post = repo.save(post);
-
-        // Add components if provided
-        if (request.getComponents() != null && !request.getComponents().isEmpty()) {
-            List<PostComponent> components = new ArrayList<>();
+        // Convert ComponentsRequest -> PostComponent
+        List<PostComponent> components = new ArrayList<>();
+        if (request.getComponents() != null) {
             int order = 1;
-            for (ComponentsRequest componentReq : request.getComponents()) {
-                if (componentReq.getType() != null) { // Only add components with valid type
-                    PostComponent component = createComponent(post, componentReq, order++);
-                    System.out.println("Before addning");
+            for (ComponentsRequest compReq : request.getComponents()) {
+                PostComponent component = new PostComponent();
+                component.setComponentType(compReq.getType().toString()); // enum -> string
+                component.setComponentOrder(order++);
 
-                    components.add(component);
+                // Assign data depending on component type
+                switch (compReq.getType()) {
+                    case POST_BODY -> component.setComponentData(compReq.getContent());
+                    case CODE_BLOCK_WITH_COPY -> component.setComponentData(compReq.getCode());
+                    case IMAGE_BLOCK -> component.setComponentData(compReq.getSrc());
+                    case HEADING_TAG -> component.setComponentData(compReq.getHeadingText());
+                    case TABLE_BLOCK -> component.setComponentData(compReq.getTableRows());
                 }
+
+
+                component.setParsedData(null); // optional
+                components.add(component);
             }
-            post.setComponents(components);
         }
 
-        return repo.save(post);
+        post.setComponents(components);
+
+        return postRepository.save(post);
     }
 
-
-
-    // Helper method to create new component
+    @Override
     public PostComponent createComponent(PostEntity post, ComponentsRequest componentReq, int order) {
-        try {
-            String componentData;
+        PostComponent component = new PostComponent();
+        component.setComponentType(componentReq.getType().toString());
+        component.setComponentData(componentReq.getContent()); // or whichever field is relevant
+        component.setComponentOrder(order);
+        component.setParsedData(null); // set parsedData if needed
 
-            switch (componentReq.getType()) {
-                case POST_BODY:
-                    Map<String, String> textData = new HashMap<>();
-                    textData.put("content", componentReq.getContent());
-                    componentData = objectMapper.writeValueAsString(textData);
-                    break;
-
-                case CODE_BLOCK_WITH_COPY:
-                    Map<String, String> codeData = new HashMap<>();
-                    codeData.put("code", componentReq.getCode());
-                    componentData = objectMapper.writeValueAsString(codeData);
-                    break;
-
-                case IMAGE_BLOCK:
-                    Map<String, String> imageData = new HashMap<>();
-                    imageData.put("src", componentReq.getSrc());
-                    imageData.put("alt", componentReq.getAlt());
-                    componentData = objectMapper.writeValueAsString(imageData);
-                    break;
-
-                case HEADING_TAG:
-                    Map<String, String> headingData = new HashMap<>();
-                    headingData.put("as", componentReq.getHeadingLevel());
-                    headingData.put("text", componentReq.getHeadingText());
-                    componentData = objectMapper.writeValueAsString(headingData);
-                    break;
-
-                case TABLE_BLOCK:
-                    Map<String, Object> tableData = new HashMap<>();
-                    try {
-                        List<String> headers = objectMapper.readValue(componentReq.getTableHeaders(), List.class);
-                        List<List<String>> rows = objectMapper.readValue(componentReq.getTableRows(), List.class);
-                        tableData.put("headers", headers);
-                        tableData.put("rows", rows);
-                    } catch (JsonProcessingException e) {
-                        // Fallback for malformed JSON
-                        tableData.put("headers", Arrays.asList("Header"));
-                        tableData.put("rows", Arrays.asList(Arrays.asList("Data")));
-                    }
-                    componentData = objectMapper.writeValueAsString(tableData);
-                    break;
-
-                default:
-                    componentData = "{}";
-            }
-
-            return new PostComponent(post, componentReq.getType(), order, componentData);
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error processing component data", e);
+        if (post.getComponents() != null) {
+            post.getComponents().add(component);
+        } else {
+            post.setComponents(new ArrayList<>());
+            post.getComponents().add(component);
         }
+
+        postRepository.save(post);
+        return component;
     }
-
-
 }
