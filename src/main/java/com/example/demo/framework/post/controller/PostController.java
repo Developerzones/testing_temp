@@ -33,6 +33,7 @@ public class PostController {
                 safePost.put("headingText", post.getHeadingText());
                 safePost.put("authorName", post.getAuthorName());
                 safePost.put("category", post.getCategory());
+                safePost.put("slug", post.getSlug());
                 safePost.put("componentCount", post.getComponents() != null ? post.getComponents().size() : 0);
                 safePost.put("createdAt", post.getCreatedAt() != null ? post.getCreatedAt().toString() : null);
                 safePosts.add(safePost);
